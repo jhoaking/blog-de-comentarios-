@@ -1,8 +1,9 @@
 import { Request,Response,NextFunction } from "express";
 import jwt from 'jsonwebtoken'
 import { SECRET_JWT_KEY } from "../config";
+import { tokenPayload} from "../types/authTypes";
 
-export const validateAuth = async (req : Request , res: Response , next: NextFunction) =>{
+export const validateAuth = async (req : Request , res: Response , next: NextFunction) : Promise<void> =>{
     try {
         const token = req.cookies.access_token;
         if(!token){
@@ -10,7 +11,12 @@ export const validateAuth = async (req : Request , res: Response , next: NextFun
         }
 
         const decoded =  jwt.verify(token,SECRET_JWT_KEY);
-        req.user = decoded;
+        if (typeof decoded === "string") {
+             res.status(400).json({ message: "Token inválido" });
+             return; 
+          }
+
+        req.user = decoded as tokenPayload ;
         next();
     } catch (error ) {
       
