@@ -25,10 +25,10 @@ export class blogUsuarioModel {
             throw new Error(`error at create blog at a user in the db: ${error.message}`);
         }
     }
-    static eliminarlogUsuario = async(usuario_id : number , blog_id : number,data : BlogSinId): Promise<boolean> =>{
+    static eliminarlogUsuario = async(usuario_id : number , blog_id : number,): Promise<boolean> =>{
         try {
             const query = 'DELETE FROM blogs WHERE usuario_id = ? AND blog_id = ?';
-            const values = [data.titulo,data.contenido,data.fecha_publicacion,usuario_id,blog_id];
+            const values = [usuario_id,blog_id];
             const [rows] = await connection.query<ResultSetHeader>(query,values);
             return rows.affectedRows === 1;
         } catch (error : any) {

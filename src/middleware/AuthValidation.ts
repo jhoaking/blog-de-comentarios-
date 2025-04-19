@@ -1,7 +1,7 @@
 import { Request,Response,NextFunction } from "express";
 import jwt from 'jsonwebtoken'
 import { SECRET_JWT_KEY } from "../config";
-import { tokenPayload} from "../types/authTypes";
+// import { tokenPayload} from "../types/authTypes";
 
 export const validateAuth = async (req : Request , res: Response , next: NextFunction) : Promise<void> =>{
     try {
@@ -11,12 +11,9 @@ export const validateAuth = async (req : Request , res: Response , next: NextFun
         }
 
         const decoded =  jwt.verify(token,SECRET_JWT_KEY);
-        if (typeof decoded === "string") {
-             res.status(400).json({ message: "Token inválido" });
-             return; 
-          }
+        
 
-        req.user = decoded as tokenPayload ;
+        req.user = decoded  ;
         next();
     } catch (error ) {
       
