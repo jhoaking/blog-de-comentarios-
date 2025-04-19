@@ -5,7 +5,11 @@
      password : string
  }
 
+ export interface AuhtUser{
+    user : User,
+    token : string
+ }
 
 
  export type AuthSinId = Omit<User,'usuario_id'>
- export type AuthConEmail = Omit<User, 'usuario_id' | 'nombre' | 'password'>;
+ export type AuthLogin = Pick<User,'email' | 'password'>;

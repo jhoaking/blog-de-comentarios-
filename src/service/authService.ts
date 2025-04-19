@@ -1,7 +1,8 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { authModel } from '../model/authModel';
 import { SALT_ROUNDS,SECRET_JWT_KEY } from '../config';
-import { User } from '../types/authTypes';
+import { User,AuthLogin,AuhtUser,AuthSinId } from '../types/authTypes';
 
 export class AuthService {
     static createToken = async (user: User): Promise<string>  =>{
@@ -31,6 +32,40 @@ export class AuthService {
             return compare;
         } catch (error : any) {
             throw new Error(`Error comparing password: ${error.message}`);
+        }
+    }
+
+    static loginUser = async (data :AuthLogin) : Promise<AuhtUser> =>{
+        try {
+            const user = await authModel.getByEmail(data.email);
+             if(!user){
+                throw new Error("el usuario debe registrarse");
+                
+             }
+
+             const passwordIsValid = await this.comparePassword(data.password , user.password);
+             if(!passwordIsValid){
+                throw new Error("contraseña invalida");
+             }
+             const token = await this.createToken(user);
+
+             return {user,token}
+        } catch (error : any ) {
+            throw new Error(`Error loging  a user: ${error.message}`);
+        }
+    }
+
+    static registerUser = async (data : AuthSinId) :Promise <User>=>{
+        try {
+            const user = await authModel.getByEmail(data.email);
+            if(user){
+                throw new Error("usuario ya  registrado");
+            }
+            const newUser = await authModel.registerUser(data)
+            
+            return newUser;
+        } catch (error : any) {
+            throw new Error(`Error register a user: ${error.message}`);
         }
     }
 }

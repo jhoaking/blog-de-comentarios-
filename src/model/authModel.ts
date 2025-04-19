@@ -1,11 +1,11 @@
 import { AuthService } from '../service/authService';
 import {connection} from '../db';
-import {  User,AuthConEmail } from '../types/authTypes';
+import {  AuthSinId, User } from '../types/authTypes';
 import { ResultSetHeader,RowDataPacket } from 'mysql2';
 
 
 export class authModel {
-    static registerUser = async (data : User) : Promise<User> =>{
+    static registerUser = async (data : AuthSinId) : Promise<User> =>{
         try {
             const hashingPassword = await AuthService.hashedPassword(data.password);
             const query = 'INSERT INTO usuarios(nombre,email,password) VALUES(?,?,?)';
@@ -14,19 +14,17 @@ export class authModel {
 
             const  [rows] = await connection.query<ResultSetHeader>(query , values);
 
-            const { usuario_id, ...rest } = data;
-
-            return {usuario_id : rows.insertId , ...rest }
+            return { usuario_id: rows.insertId, ...data };
         } catch (error : any) {
             throw new Error(`Error to register a user: ${error.message}`);
         }
     }
 
 
-    static getByEmail = async (data : AuthConEmail) : Promise<User | null> =>{
+    static getByEmail = async (email : string) : Promise<User | null> =>{
         try {
             const query = 'SELECT * FROM usuarios WHERE email = ?';
-            const [rows] = await connection.query<RowDataPacket[]>(query,[data.email]);
+            const [rows] = await connection.query<RowDataPacket[]>(query,[email]);
              if(rows.length === 0){
                 return null;
              }
