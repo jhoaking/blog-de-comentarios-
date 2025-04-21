@@ -1,6 +1,6 @@
 export interface Blogs{
     blog_id : number,
-    titulo : String,
+    titulo : string,
     contenido  :string,
     fecha_publicacion : string,
     usuario_id : number

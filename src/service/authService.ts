@@ -2,10 +2,10 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { authModel } from '../model/authModel';
 import { SALT_ROUNDS,SECRET_JWT_KEY } from '../config';
-import { User,AuthLogin,AuhtUser,AuthSinId } from '../types/authTypes';
+import { AuthType,AuthLogin,AuhtUser,AuthSinId } from '../types/authTypes';
 
 export class AuthService {
-    static createToken = async (user: User): Promise<string>  =>{
+    static createToken = async (user: AuthType): Promise<string>  =>{
         try {
             const token  = jwt.sign(
                 {id: user.usuario_id , nombre : user.nombre, email : user.email},
@@ -55,7 +55,7 @@ export class AuthService {
         }
     }
 
-    static registerUser = async (data : AuthSinId) :Promise <User>=>{
+    static registerUser = async (data : AuthSinId) :Promise <AuthType>=>{
         try {
             const user = await authModel.getByEmail(data.email);
             if(user){

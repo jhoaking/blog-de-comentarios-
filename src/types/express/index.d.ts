@@ -1,11 +1,11 @@
-import { tokenPayload } from "../authTypes";
+import { AuthType } from "../AuthTypes";
+
+export {};
 
 declare global {
   namespace Express {
     interface Request {
-      user?: tokenPayload;
+      user?: AuthType;
     }
   }
-}    
-
-export {};  
+}
