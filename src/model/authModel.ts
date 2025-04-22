@@ -1,11 +1,11 @@
 import { AuthService } from '../service/authService';
 import {connection} from '../db';
-import {  AuthSinId, AuthType } from '../types/authTypes';
+import {  register, AuthType } from '../types/authTypes';
 import { ResultSetHeader,RowDataPacket } from 'mysql2';
 
 
 export class authModel {
-    static registerUser = async (data : AuthSinId) : Promise<AuthType> =>{
+    static registerUser = async (data : register) : Promise<AuthType> =>{
         try {
             const hashingPassword = await AuthService.hashedPassword(data.password);
             const query = 'INSERT INTO usuarios(nombre,email,password) VALUES(?,?,?)';

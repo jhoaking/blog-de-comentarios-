@@ -1,8 +1,7 @@
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import { authModel } from '../model/authModel';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { SALT_ROUNDS,SECRET_JWT_KEY } from '../config';
-import { AuthType,AuthLogin,AuhtUser,AuthSinId } from '../types/authTypes';
+import { AuthType} from '../types/authTypes';
 
 export class AuthService {
     static createToken = async (user: AuthType): Promise<string>  =>{
@@ -35,37 +34,12 @@ export class AuthService {
         }
     }
 
-    static loginUser = async (data :AuthLogin) : Promise<AuhtUser> =>{
+
+    static  verifyToken = (token: string): string | JwtPayload => {
         try {
-            const user = await authModel.getByEmail(data.email);
-             if(!user){
-                throw new Error("el usuario debe registrarse");
-                
-             }
-
-             const passwordIsValid = await this.comparePassword(data.password , user.password);
-             if(!passwordIsValid){
-                throw new Error("contraseña invalida");
-             }
-             const token = await this.createToken(user);
-
-             return {user,token}
-        } catch (error : any ) {
-            throw new Error(`Error loging  a user: ${error.message}`);
+          return jwt.verify(token, SECRET_JWT_KEY);
+        } catch (error: any) {
+          throw new Error(`Error verifying token: ${error.message}`);
         }
-    }
-
-    static registerUser = async (data : AuthSinId) :Promise <AuthType>=>{
-        try {
-            const user = await authModel.getByEmail(data.email);
-            if(user){
-                throw new Error("usuario ya  registrado");
-            }
-            const newUser = await authModel.registerUser(data)
-            
-            return newUser;
-        } catch (error : any) {
-            throw new Error(`Error register a user: ${error.message}`);
-        }
-    }
+      };
 }

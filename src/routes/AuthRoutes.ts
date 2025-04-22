@@ -1,14 +1,11 @@
 import { Router } from "express";
-import { authController } from "../controller/authController";
+import { validateAuth } from "../middleware/AuthValidation";
+import { register,loginUser,logout,protectedRoute } from "../controller/controller2";
 
+export const authRouter = Router();
 
- const router = Router();
+authRouter.post('/register', register);
+authRouter.post('/login', loginUser);
+authRouter.get('/protected', validateAuth, protectedRoute);
+authRouter.get('/logout', logout);
 
- router.post('/register',authController.register)
- router.post('/login',authController.login)
- router.get('/protected' ,authController.protected)
- router.get('/logout',authController.logout)
-
-
-
- export default router;
