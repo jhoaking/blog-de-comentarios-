@@ -1,11 +1,10 @@
 import { Router } from "express";
-import { validateAuth } from "../middleware/AuthValidation";
-import { register,loginUser,logout,protectedRoute } from "../controller/controller2";
+import { authController } from "../controller/authController";
+import { validateAuth } from "../middleware/authValidation";
 
-export const authRouter = Router();
+export const authRoutes = Router();
 
-authRouter.post('/register', register);
-authRouter.post('/login', loginUser);
-authRouter.get('/protected', validateAuth, protectedRoute);
-authRouter.get('/logout', logout);
-
+authRoutes.post('/login',authController.login);
+authRoutes.post('/register',authController.register);
+authRoutes.get('/protected', validateAuth , authController.protectedUser);
+authRoutes.get('/logout',authController.logout);

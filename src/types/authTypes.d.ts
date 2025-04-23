@@ -8,4 +8,4 @@
  }
 
 
- export type register = pick<AuthType,'nombre' |  'email' | 'password'>
+ export type Register = Pick<AuthType,'nombre' |  'email' | 'password'>
