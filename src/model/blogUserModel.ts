@@ -1,12 +1,18 @@
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { connection } from "../db";
-import { BlogUserType, CreateBlogUser, UpdateBlogUser } from "../types/blogUser";
-import { number } from "zod";
+import {
+  BlogUserType,
+  blogUserTypeFront,
+  CreateBlogUser,
+  UpdateBlogUser,
+} from "../types/blogUser";
 
 export class blogUserModel {
   static getBlogUser = async (id: number): Promise<BlogUserType[]> => {
     try {
-      const query = "SELECT  * FROM blogs WHERE usuario_id = ?";
+      const query = `SELECT u.nombre , b.titulo , b.contenido , b.fecha_publicacion  FROM blogs b
+	                  INNER JOIN usuarios u ON  b.usuario_id = u.usuario_id
+	                  WHERE u.usuario_id = ?`;
       const [rows] = await connection.query(query, [id]);
 
       return rows as BlogUserType[];
@@ -15,10 +21,16 @@ export class blogUserModel {
     }
   };
 
-  static getBlogUserById = async (id: number): Promise<BlogUserType[]> => {
+  static getBlogUserById = async (
+    blog_id: number,
+    id: number
+  ): Promise<BlogUserType[]> => {
     try {
-      const query = "SELECT * FROM blogs WHERE usuario_id = ?";
-      const [rows] = await connection.query<RowDataPacket[]>(query, [id]);
+      const query = "SELECT * FROM blogs WHERE  blog_id = ? AND usuario_id = ?";
+      const [rows] = await connection.query<RowDataPacket[]>(query, [
+        blog_id,
+        id,
+      ]);
       if (rows.length === 0) {
         throw new Error("no se encontro el usuario");
       }
@@ -29,12 +41,13 @@ export class blogUserModel {
   };
 
   static createBlogUser = async (
-    data: CreateBlogUser
-  ): Promise<BlogUserType> => {
+    data: CreateBlogUser,
+    usuario_id : number
+  ): Promise<blogUserTypeFront> => {
     try {
       const query =
-        "INSERT INTO blogs(titulo , contenido , fecha_publicacion )";
-      const values = [data.titulo, data.contenido, data.fecha_publicacion];
+        "INSERT INTO blogs(titulo , contenido , fecha_publicacion, usuario_id )VALUES(?,?,?,?)";
+      const values = [data.titulo, data.contenido, data.fecha_publicacion,usuario_id];
 
       const [rows] = await connection.query<ResultSetHeader>(query, values);
 
@@ -50,11 +63,22 @@ export class blogUserModel {
     return result.affectedRows > 0;
   };
 
-  static updateBlogUser = async (data : UpdateBlogUser , blog_id : number, usuario_id : number):Promise<boolean> =>{
-     const query = 'UPDATE blogs SET titulo = ?, contenido = ? WHERE blog_id = ? AND usuario_id = ? ';
-     const values = [data.titulo,data.contenido,data.fecha_publicacion , blog_id,usuario_id];
+  static updateBlogUser = async (
+    data: UpdateBlogUser,
+    blog_id: number,
+    usuario_id: number
+  ): Promise<boolean> => {
+    const query =
+      "UPDATE blogs SET titulo = ?, contenido = ? WHERE blog_id = ? AND usuario_id = ? ";
+    const values = [
+      data.titulo,
+      data.contenido,
+      data.fecha_publicacion,
+      blog_id,
+      usuario_id,
+    ];
 
-     const [rows] = await connection.query<ResultSetHeader>(query,values);
-     return rows.affectedRows > 0;
-  }
+    const [rows] = await connection.query<ResultSetHeader>(query, values);
+    return rows.affectedRows > 0;
+  };
 }
