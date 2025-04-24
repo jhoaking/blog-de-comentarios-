@@ -17,7 +17,9 @@ export class blogUserModel {
 
       return rows as BlogUserType[];
     } catch (error: any) {
+      console.log(error.message);
       throw new Error("error al obtener los blogs del usuario");
+      
     }
   };
 
@@ -57,9 +59,9 @@ export class blogUserModel {
     }
   };
 
-  static deleteBlogUser = async (blog_id: number): Promise<boolean> => {
-    const query = "DELETE FROM blogs WHERE blog_id = ?";
-    const [result] = await connection.query<ResultSetHeader>(query, [blog_id]);
+  static deleteBlogUser = async (blog_id: number , usuario_id : number): Promise<boolean> => {
+    const query = "DELETE FROM blogs WHERE blog_id = ? AND usuario_id = ?";
+    const [result] = await connection.query<ResultSetHeader>(query, [blog_id,usuario_id]);
     return result.affectedRows > 0;
   };
 
@@ -69,7 +71,7 @@ export class blogUserModel {
     usuario_id: number
   ): Promise<boolean> => {
     const query =
-      "UPDATE blogs SET titulo = ?, contenido = ? WHERE blog_id = ? AND usuario_id = ? ";
+      "UPDATE blogs SET titulo = ?, contenido = ? ,fecha_publicacion = ? WHERE blog_id = ? AND usuario_id = ? ";
     const values = [
       data.titulo,
       data.contenido,

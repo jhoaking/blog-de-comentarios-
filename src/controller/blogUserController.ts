@@ -30,6 +30,12 @@ export class blogUserController {
     }
     try {
       const blogUser = await blogUserModel.getBlogUserById(blog, user);
+
+      if (!blogUser.length) {
+        res.status(404).json({ message: "No se encontró el blog o no tienes permisos" });
+        return;
+      }
+  
       res.status(200).json(blogUser[0]);
     } catch (error: any) {
       res.status(500).json({ message: "Error al obtener el blog del usuario" });
@@ -72,8 +78,18 @@ export class blogUserController {
     res: Response
   ): Promise<void> => {
     const blog = Number(req.params.id);
+    const userId = req.user?.usuario_id;
+
+  if (!userId) {
+    res.status(401).json({ message: "user unauthorized" });
+    return;
+  }
     try {
-      const deleteBlog = await blogUserModel.deleteBlogUser(blog);
+      const deleteBlog = await blogUserModel.deleteBlogUser(blog,userId);
+      if (!deleteBlog) {
+        res.status(404).json({ message: "No tienes permisos o no existe el blog" });
+        return;
+      }
       res.status(201).json(deleteBlog);
     } catch (error: any) {
       res.status(500).json({ message: "Error al crear los blogs del usuario" });
@@ -107,7 +123,7 @@ export class blogUserController {
 
       res.status(201).json(newUser);
     } catch (error: any) {
-      res.status(500).json({ message: "Error al crear los blogs del usuario" });
+      res.status(500).json({ message: "Error al actuaizar los blogs del usuario" });
       console.error(error.message);
     }
   };
