@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { comentarioModel } from "../model/comentarioModel";
-import { validateComment } from "../schema/comentariosSchema";
+// import { validateComment } from "../schema/comentariosSchema";
 
 export class comentarioController {
   static obtenerComentarios = async (
@@ -27,5 +27,5 @@ export class comentarioController {
     }
   };
 
-  
+
 }
