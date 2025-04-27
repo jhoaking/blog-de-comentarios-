@@ -48,6 +48,8 @@ export class comentarioController {
 
   static  eliminarComentario = async (req: Request , res : Response):Promise<void> =>{
     const user = req.user?.usuario_id;
+    console.log(user);
+    
     if (!user) {
       res.status(401).json({ message: "user unauthorized" });
       return;
